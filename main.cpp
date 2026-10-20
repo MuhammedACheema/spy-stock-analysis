@@ -81,6 +81,34 @@ double profit(const std::string &startDate, const std::string &endDate,const std
     return value;
 }
 
+std::vector<double> dailyReturns(const std::vector<RowBar>& data){
+    std::vector<double> daily;
+    for(unsigned int i = 1; i < data.size(); i++){
+        double numerator = data[i].close - data[i-1].close;
+        double value = numerator/data[i-1].close;
+        daily.emplace_back(value);
+    }
+    return daily;
+}
+
+double avgReturns(const std::vector<double> &data){
+    double val = 0; 
+    for(unsigned int i = 0; i < data.size(); i++){
+        val += data[i];
+    }
+    double ans = val / data.size();
+    return ans;
+}
+
+double compoundCheck(const std::vector<double> &data){
+    double curr = 1;
+    for(unsigned int i = 0; i < data.size(); i++){
+        double val = 1 + data[i];
+        curr = curr * val;
+    }
+    return curr;
+}
+
 int main(){
     // opens the file and populates the data
     std::string filename = "spy_us_d.csv";
@@ -93,11 +121,13 @@ int main(){
     std::cout << bar.back().close <<"\n";
     std::cout << bar.back().date <<"\n";
 
+    // // success data 
+    // std::cout << profit("2005-02-25","2005-02-28",bar) << "\n";
 
-    // fail data this is a weekend
-    std::cout << profit("2005-02-26","2005-02-28",bar) << "\n";
+    std::vector<double> ans = dailyReturns(bar);
 
-    // success data 
-    std::cout << profit("2005-02-25","2005-02-28",bar) << "\n";
+    std::cout<<ans.size() << "\n";
+    std::cout << avgReturns(ans) << "\n";
+    std::cout << compoundCheck(ans) << "\n";
 
 }
