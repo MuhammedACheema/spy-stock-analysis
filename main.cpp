@@ -100,6 +100,32 @@ double avgReturns(const std::vector<double> &data){
     return ans;
 }
 
+double avgWindow(const std::vector<RowBar> &data, const std::string &date,int days){
+    double total = 0;
+    int startIndex = -1;
+    for (int i = data.size()-1; i >= 0; i--){
+        if(data[i].date == date){
+            startIndex = i;
+            break;
+        }
+    }    
+    if (startIndex == -1){
+       std::cerr << "values are invalid" << "\n";
+        return 0;
+    }
+    int batch = startIndex - days;
+    for(int i = startIndex; i > batch; i--){
+        if(i < 0){
+            std::cerr << "values out of range" << "\n";
+            return 0;
+        }
+        else{
+            total += data[i].close;
+        }
+    }
+    return total / days;
+}
+
 double compoundCheck(const std::vector<double> &data){
     double curr = 1;
     for(unsigned int i = 0; i < data.size(); i++){
@@ -129,5 +155,8 @@ int main(){
     std::cout<<ans.size() << "\n";
     std::cout << avgReturns(ans) << "\n";
     std::cout << compoundCheck(ans) << "\n";
+    std::cout<< "the avg close is for 20 days from 2005-06-29: " << avgWindow(bar,"2005-06-29", 20) <<"\n"; 
+    std::cout<< "this case should fail is the 18th index: " << avgWindow(bar,"2005-03-23", 20) <<"\n"; 
+    std::cout<< "this case should pass it is the 19th index: " << avgWindow(bar,"2005-03-24", 20) <<"\n"; 
 
 }
