@@ -4,6 +4,7 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 struct RowBar{
     std::string date;
@@ -92,6 +93,10 @@ std::vector<double> dailyReturns(const std::vector<RowBar>& data){
 }
 
 double avgReturns(const std::vector<double> &data){
+    if(data.size() == 0){
+        std::cerr << "data provided not valid" << "\n";
+        return 0;
+    }
     double val = 0; 
     for(unsigned int i = 0; i < data.size(); i++){
         val += data[i];
@@ -135,6 +140,25 @@ double compoundCheck(const std::vector<double> &data){
     return curr;
 }
 
+double volatility(const std::vector<double> &data){
+    if(data.size() <= 1){
+        std::cerr << "data provided not valid" << "\n";
+        return 0;
+    }
+    // this will give the mean
+    double mean = avgReturns(data);
+    double total = 0; 
+
+    for(unsigned int i = 0; i < data.size(); i++){
+        double spread = mean - data[i];
+        spread = spread * spread;
+        total += spread;
+    }
+    // this is a sample std because we are only taking a couple pieces of it
+    double inside = total / (data.size() - 1);
+
+    return std::sqrt(inside);
+}
 int main(){
     // opens the file and populates the data
     std::string filename = "spy_us_d.csv";
@@ -158,5 +182,8 @@ int main(){
     std::cout<< "the avg close is for 20 days from 2005-06-29: " << avgWindow(bar,"2005-06-29", 20) <<"\n"; 
     std::cout<< "this case should fail is the 18th index: " << avgWindow(bar,"2005-03-23", 20) <<"\n"; 
     std::cout<< "this case should pass it is the 19th index: " << avgWindow(bar,"2005-03-24", 20) <<"\n"; 
+
+    std::cout << volatility(ans) << "\n";
+    std::cout << "Annualized volatility: " << std::sqrt(252) * volatility(ans) << "\n";
 
 }
