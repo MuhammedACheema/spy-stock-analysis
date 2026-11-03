@@ -15,6 +15,13 @@ struct RowBar{
     long long volume;
 };
 
+struct DrawDowns{
+    double peak;
+    double drawDown;
+    std::string peakDate;
+    std::string troughDate;
+};
+
 
 // will read through the file, organize the data, and populate our vector 
 std::vector<RowBar>loadData(const std::string &filename){
@@ -159,6 +166,44 @@ double volatility(const std::vector<double> &data){
 
     return std::sqrt(inside);
 }
+
+// keep track of moving max, and the most some may suffer
+DrawDowns maxdrawdown(const std::vector<RowBar> &data){
+    // this will store the current maximum
+    double currMaxi = 0;
+    std::string currMaxiDate = "";
+    double currdrawDown = 0; 
+
+    double maxi = 0;
+    std::string maxiDate = "";
+    double drawDown = 0; 
+    std::string troughDate = "";
+
+    for(unsigned int i = 0; i < data.size(); i++){
+        if(data[i].close > currMaxi){
+            currMaxi = data[i].close;
+            currMaxiDate = data[i].date;
+        }
+        double currLost = currMaxi - data[i].close;
+        currdrawDown = currLost / currMaxi;
+        if(currdrawDown > drawDown){
+            drawDown = currdrawDown; 
+            troughDate = data[i].date;
+            maxi = currMaxi;
+            maxiDate = currMaxiDate;
+        }
+    }
+
+    DrawDowns reports;
+    reports.peak = maxi;
+    reports.drawDown = drawDown;
+    reports.troughDate = troughDate; 
+    reports.peakDate = maxiDate;
+
+    return reports;
+}
+
+
 int main(){
     // opens the file and populates the data
     std::string filename = "spy_us_d.csv";
@@ -185,5 +230,8 @@ int main(){
 
     std::cout << volatility(ans) << "\n";
     std::cout << "Annualized volatility: " << std::sqrt(252) * volatility(ans) << "\n";
-
+    std::cout <<  "the Peak Date is: "  <<maxdrawdown(bar).peakDate << "\n";
+    std::cout <<  "the Peak is: "  <<maxdrawdown(bar).peak << "\n";
+    std::cout <<  "the Draw Down is: "  <<maxdrawdown(bar).drawDown << "\n";
+    std::cout <<  "the Trough Date is: "  <<maxdrawdown(bar).troughDate << "\n";
 }
