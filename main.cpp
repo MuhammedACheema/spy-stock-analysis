@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <map>
 #include <fstream>
 #include <sstream>
 #include <cmath>
@@ -210,28 +209,28 @@ int main(){
     std::vector<RowBar> bar = loadData(filename);
 
     // load data check
-    std::cout << bar.size() << "\n";
-    std::cout << bar.front().date <<"\n";
-    std::cout << bar.front().close <<"\n";
-    std::cout << bar.back().close <<"\n";
-    std::cout << bar.back().date <<"\n";
+    std::cout << "data size: " << bar.size() << "\n";
+    std::cout << "data start date: " << bar.front().date <<"\n";
+    std::cout << "data start close: " << bar.front().close <<"\n";
+    std::cout << "data end close: " << bar.back().close <<"\n";
+    std::cout << "data end date: " << bar.back().date <<"\n";
 
-    // // success data 
-    // std::cout << profit("2005-02-25","2005-02-28",bar) << "\n";
+    // success data 
+    std::cout << "the profit for 2005-02-25 to 2005-02-28 is: " << profit("2005-02-25","2005-02-28",bar) << "\n";
 
     std::vector<double> ans = dailyReturns(bar);
 
-    std::cout<<ans.size() << "\n";
-    std::cout << avgReturns(ans) << "\n";
-    std::cout << compoundCheck(ans) << "\n";
+    std::cout<< "all daily returns total size:" << ans.size() << "\n";
+    std::cout<< "the avg return is: " << avgReturns(ans) << "\n";
+    std::cout << "the compound check is: " << compoundCheck(ans) << "\n";
     std::cout<< "the avg close is for 20 days from 2005-06-29: " << avgWindow(bar,"2005-06-29", 20) <<"\n"; 
-    std::cout<< "this case should fail is the 18th index: " << avgWindow(bar,"2005-03-23", 20) <<"\n"; 
-    std::cout<< "this case should pass it is the 19th index: " << avgWindow(bar,"2005-03-24", 20) <<"\n"; 
 
-    std::cout << volatility(ans) << "\n";
-    std::cout << "Annualized volatility: " << std::sqrt(252) * volatility(ans) << "\n";
-    std::cout <<  "the Peak Date is: "  <<maxdrawdown(bar).peakDate << "\n";
-    std::cout <<  "the Peak is: "  <<maxdrawdown(bar).peak << "\n";
-    std::cout <<  "the Draw Down is: "  <<maxdrawdown(bar).drawDown << "\n";
-    std::cout <<  "the Trough Date is: "  <<maxdrawdown(bar).troughDate << "\n";
+    double dailyVol = volatility(ans);
+    std::cout << "Daily volatility: " << dailyVol << "\n";
+    std::cout << "Annualized volatility: " << std::sqrt(252) * dailyVol << "\n";
+    DrawDowns reports = maxdrawdown(bar);
+    std::cout <<  "the Peak Date is: "  << reports.peakDate << "\n";
+    std::cout <<  "the Peak is: "  <<reports.peak << "\n";
+    std::cout <<  "the Draw Down is: "  << reports.drawDown << "\n";
+    std::cout <<  "the Trough Date is: "  << reports.troughDate << "\n";
 }
